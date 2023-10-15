@@ -1,6 +1,3 @@
-#ifndef STB_IAMGE_IMPLEMENTATION
-#define STB_IAMGE_IMPLEMENTATION
-#endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>

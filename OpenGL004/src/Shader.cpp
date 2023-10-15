@@ -120,7 +120,7 @@ void Shader::GetShaderSource(const std::string& path, std::string& shaderSource)
 	}
 	else
 	{
-		std::cout << "Can't open file" << std::endl;
+		std::cout << "Can't open file" <<"\" "<< path << "\" !" << std::endl;
 		infile.close();
 		return;
 	}

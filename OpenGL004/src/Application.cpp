@@ -1,5 +1,5 @@
-#ifndef STB_IAMGE_IMPLEMENTATION
-#define STB_IAMGE_IMPLEMENTATION
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 #endif
 
 #include <glad/glad.h>
@@ -42,17 +42,30 @@ int main()
 	// 生成上下文
 	glfwMakeContextCurrent(window);
 
+	// 加载opengl函数 要在生成上下文之后
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Fail to initialize glad" << std::endl;
+		return false;
+	}
+
+
 	// 开启垂直同步
 	glfwSwapInterval(1);
 
 	// 设置视口
 	GLCall(glViewport(0, 0, WIDTH, HEIGHT));
 
+	// 捕捉cursor
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	// 声明回调函数
 	void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 	void scroll_callback(GLFWwindow * window, double offsetx, double offsery);
 	void mouse_callback(GLFWwindow * window, double xpos, double ypos);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
+	void ProcessInput(GLFWwindow * window);
 	// 注册回调函数
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -63,9 +76,13 @@ int main()
 	GLCall(glClearColor(0.11, 0.385f, 0.367f, 1.f));	//清屏颜色
 
 	// 变换
-	glm::mat4 modelTrans = glm::rotate(modelTrans, -PI / 3.5f, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 viewTrans = glm::translate(viewTrans, glm::vec3(0.0f, 0.0f, -3.0f));
-	glm::mat4 projectionTrans = glm::perspective(PI / 4.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	glm::mat4 modelTrans(1.f);
+	glm::mat4 viewTrans(1.f);
+	glm::mat4 projectionTrans(1.f);
+
+	modelTrans = glm::translate(modelTrans, glm::vec3(0.0f, 0.0f, -3.0f));
+	viewTrans = glm::translate(viewTrans, glm::vec3(0.0f, 0.0f, -3.0f));
+	projectionTrans = glm::perspective(PI / 4.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
 	// data
 	std::string pathVertexShader(".\\res\\VertexShader.shader");
@@ -112,17 +129,30 @@ int main()
 		VertexArray va(36);
 		va.AddBuffer(8, 3, vertice);
 		va.AddElementBuffer(36, indice);
-		va.AddVertexAttrib(0, 3, 3, 0);
+		va.PushAttrib(3);
+		va.ApplyLayout();
+		shader.Bind();
+
+		void UpdateTimer();
+		lastTime = currentTime = glfwGetTime();
 		while (!glfwWindowShouldClose(window))
 		{
+			// 更新时间变量
+			UpdateTimer();
+
 			viewTrans = camera.GetViewTrans();
-			projectionTrans = camera.GetViewTrans();
+			projectionTrans = camera.GetProjectionTrans();
+
+			shader.SetUniform4f("theColor", color.x, color.y, color.z, 1.0f);
+
 			shader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
 			shader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			shader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
 
 			va.DrawElement();
 
+			// 处理键盘控制输入
+			ProcessInput(window);
 			// 交换缓冲
 			glfwSwapBuffers(window);
 			// 清除颜色和深度检测缓冲
@@ -130,8 +160,6 @@ int main()
 			// 检查触发事件
 			glfwPollEvents();
 		}
-	
-	
 	
 	
 	}
@@ -176,30 +204,52 @@ void scroll_callback(GLFWwindow* window, double offsetx, double offsety)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	if (action == GLFW_PRESS)
-		switch (key)
-		{
-		case GLFW_KEY_ESCAPE:
-			glfwSetWindowShouldClose(window, true);
-			break;
-		case GLFW_KEY_W:
-			camera.ProcessKeyInput(FRONT, deltaTime);
-			break;
-		case GLFW_KEY_S:
-			camera.ProcessKeyInput(BACK, deltaTime);
-			break;
-		case GLFW_KEY_A:
-			camera.ProcessKeyInput(LEFT, deltaTime);
-			break;
-		case GLFW_KEY_D:
-			camera.ProcessKeyInput(RIGHT, deltaTime);
-			break;
-		case GLFW_KEY_SPACE:
-			camera.ProcessKeyInput(UP, deltaTime);
-			break;
-		case GLFW_KEY_LEFT_SHIFT:
-			camera.ProcessKeyInput(DOWN, deltaTime);
-			break;
-		default:break;
-		};
+
+}
+
+// 处理键盘交互
+void ProcessInput(GLFWwindow* window)
+{
+	// 检测esc按下，则关闭窗口
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, true);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput(FRONT, deltaTime);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput(BACK, deltaTime);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput(LEFT, deltaTime);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput(RIGHT, deltaTime);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput(UP, deltaTime);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		camera.ProcessKeyInput(DOWN, deltaTime);
+	}
+}
+
+void UpdateTimer()
+{
+	currentTime = glfwGetTime();
+	deltaTime = currentTime - lastTime;
+	lastTime = currentTime;
 }

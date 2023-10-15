@@ -66,7 +66,7 @@ void Camera::ProcessScroll(float offsety)
 
 void Camera::UpdateViewTrans()
 {
-	glm::vec3 front;
+	static glm::vec3 front;
 	front.x = cos(m_pitch) * cos(m_yaw);
 	front.y = sin(m_pitch);
 	front.z = cos(m_pitch) * sin(m_yaw);

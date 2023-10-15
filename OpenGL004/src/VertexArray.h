@@ -8,6 +8,16 @@ private:
 	unsigned int m_VBO;	// Vertex Buffer Object
 	int m_vertexCount;	// 顶点数目 索引的数目
 	std::vector<int> m_attribLayout;	// 每个属性的维度数目
+
+	/// <summary>
+/// 添加属性
+/// </summary>
+/// <param name="index">属性索引</param>
+/// <param name="nDimen">属性维度</param>
+/// <param name="stride">步幅</param>
+/// <param name="offset">偏置</param>
+	void AddVertexAttrib(unsigned int index, int nDimen, int stride, int offset);
+
 public:
 	VertexArray(int count);
 	~VertexArray();
@@ -20,14 +30,7 @@ public:
 	void AddBuffer(int count, int nDimen, const float* data);
 	void AddElementBuffer(int count, const unsigned int* data);
 
-/// <summary>
-/// 添加属性
-/// </summary>
-/// <param name="index">属性索引</param>
-/// <param name="nDimen">属性维度</param>
-/// <param name="stride">步幅</param>
-/// <param name="offset">偏置</param>
-	void AddVertexAttrib(unsigned int index, int nDimen, int stride, int offset);
+
 	void DrawElement();
 	void Bind();
 	void Unbind();
