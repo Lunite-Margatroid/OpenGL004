@@ -20,6 +20,8 @@ float currentTime = 0.0f;
 float deltaTime = 0.0f;
 float lastTime = 0.0f;
 
+glm::mat4 eMat(1.0f);
+
 Camera camera;
 
 int main()
@@ -73,14 +75,13 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 	
 	GLCall(glEnable(GL_DEPTH_TEST));					// 深度检测
-	GLCall(glClearColor(0.11, 0.385f, 0.367f, 1.f));	//清屏颜色
+	GLCall(glClearColor(0.11f, 0.385f, 0.367f, 1.f));	//清屏颜色
 
 	// 变换
 	glm::mat4 modelTrans(1.f);
 	glm::mat4 viewTrans(1.f);
 	glm::mat4 projectionTrans(1.f);
 
-	modelTrans = glm::translate(modelTrans, glm::vec3(0.0f, 0.0f, -3.0f));
 	viewTrans = glm::translate(viewTrans, glm::vec3(0.0f, 0.0f, -3.0f));
 	projectionTrans = glm::perspective(PI / 4.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
@@ -88,17 +89,35 @@ int main()
 	std::string pathVertexShader(".\\res\\VertexShader.shader");
 	std::string pathFragmentShader(".\\res\\FragmentShader.shader");
 
+	glm::vec3 lightPos = glm::vec3(6.0f, 5.0f, 3.0f);
+	glm::vec3 objPos = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	float vertice[] =
 	{
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, 0.5f, -0.5f,
-		-0.5f, 0.5f, 0.5f,
+		// 坐标						颜色
+		-0.5f, -0.5f, -0.5f,	0.8f,0.8f,0.8f,
+		-0.5f, -0.5f, 0.5f,		0.8f,0.8f,0.8f,
+		-0.5f, 0.5f, -0.5f,		0.8f,0.8f,0.8f,
+		-0.5f, 0.5f, 0.5f,		0.8f,0.8f,0.8f,
 
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f , 0.5f, -0.5f,
-		0.5f, 0.5f, 0.5f,
+		0.5f, -0.5f, -0.5f,		0.8f,0.8f,0.8f,
+		0.5f, -0.5f, 0.5f,		0.8f,0.8f,0.8f,
+		0.5f , 0.5f, -0.5f,		0.8f,0.8f,0.8f,
+		0.5f, 0.5f, 0.5f,		0.8f,0.8f,0.8f,
+	};
+
+	float objVertice[] =
+	{
+		// 坐标						颜色
+		-1.0f, -1.0f, -1.0f,	float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		-1.0f, -1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		-1.0f, 1.0f, -1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		-1.0f, 1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+
+		1.0f, -1.0f, -1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		1.0f, -1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		1.0f , 1.0f, -1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		1.0f, 1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
 	};
 
 	unsigned int indice[]
@@ -122,16 +141,26 @@ int main()
 		3, 5, 7
 	};
 
-	glm::vec3 color(0.9f, 0.9f, 0.9f);
 
 	{
 		Shader shader(pathVertexShader, pathFragmentShader);
+		Shader objShader(".\\res\\VertexShader_obj.shader", ".\\res\\FragmentShader_obj.shader");
+
 		VertexArray va(36);
-		va.AddBuffer(8, 3, vertice);
+		va.AddBuffer(8, 6, vertice);
 		va.AddElementBuffer(36, indice);
 		va.PushAttrib(3);
+		va.PushAttrib(3);
 		va.ApplyLayout();
-		shader.Bind();
+		
+
+		VertexArray objVa(36);
+		objVa.AddBuffer(8, 6, objVertice);
+		objVa.AddElementBuffer(36, indice);
+		objVa.PushAttrib(3);
+		objVa.PushAttrib(3);
+		objVa.ApplyLayout();
+
 
 		void UpdateTimer();
 		lastTime = currentTime = glfwGetTime();
@@ -143,13 +172,24 @@ int main()
 			viewTrans = camera.GetViewTrans();
 			projectionTrans = camera.GetProjectionTrans();
 
-			shader.SetUniform4f("theColor", color.x, color.y, color.z, 1.0f);
+			shader.Unbind();
+			shader.Bind();
 
+			modelTrans = glm::translate(eMat, lightPos);
 			shader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
 			shader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			shader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
 
 			va.DrawElement();
+
+			objShader.Unbind();
+			objShader.Bind();
+			modelTrans = glm::translate(eMat, objPos);
+			objShader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
+			objShader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
+			objShader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
+			objVa.DrawElement();
+			
 
 			// 处理键盘控制输入
 			ProcessInput(window);

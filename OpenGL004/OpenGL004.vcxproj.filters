@@ -51,5 +51,7 @@
   <ItemGroup>
     <None Include="res\FragmentShader.shader" />
     <None Include="res\VertexShader.shader" />
+    <None Include="res\VertexShader_obj.shader" />
+    <None Include="res\FragmentShader_obj.shader" />
   </ItemGroup>
 </Project>

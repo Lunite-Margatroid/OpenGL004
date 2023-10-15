@@ -25,7 +25,7 @@ public:
 	/// 添加顶点
 	/// </summary>
 	/// <param name="count">顶点个数</param>
-	/// <param name="nDimen">每个顶点的维度</param>
+	/// <param name="nDimen">每个顶点的属性的维度</param>
 	/// <param name="data">数据指针</param>
 	void AddBuffer(int count, int nDimen, const float* data);
 	void AddElementBuffer(int count, const unsigned int* data);

@@ -148,7 +148,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\FragmentShader.shader" />
+    <None Include="res\FragmentShader_obj.shader" />
     <None Include="res\VertexShader.shader" />
+    <None Include="res\VertexShader_obj.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
