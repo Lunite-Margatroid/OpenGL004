@@ -15,6 +15,7 @@ public:
 	void Unbind() const;
 
 	void SetUniform4f(const std::string &valueName, float v1, float v2, float v3, float v4);
+	void SetUniform3f(const std::string& valueName, float v1, float v2, float v3);
 	void SetUniform1i(const std::string &valueName, int v1);
 	/// <summary>
 	/// …Ë÷√ 4x4 float æÿ’Û

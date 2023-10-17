@@ -105,22 +105,54 @@ int main()
 		0.5f , 0.5f, -0.5f,		0.8f,0.8f,0.8f,
 		0.5f, 0.5f, 0.5f,		0.8f,0.8f,0.8f,
 	};
-
+	float mikuColor[] = { float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255 };
+	glm::vec3 objColor(mikuColor[0], mikuColor[1], mikuColor[2]);
+	glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 	float objVertice[] =
 	{
-		// 坐标						颜色
-		-1.0f, -1.0f, -1.0f,	float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
-		-1.0f, -1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
-		-1.0f, 1.0f, -1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
-		-1.0f, 1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		// 坐标										法向量
+		-1.0f,	-1.0f,	-1.0f,		-1.0f,	0.0f,	0.0f,
+		-1.0f,	-1.0f,	1.0f,		-1.0f,	0.0f,	0.0f,
+		-1.0f,	1.0f,	-1.0f,		-1.0f,	0.0f,	0.0f,
+		-1.0f,	1.0f,	1.0f,		-1.0f,	0.0f,	0.0f,
 
-		1.0f, -1.0f, -1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
-		1.0f, -1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
-		1.0f , 1.0f, -1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
-		1.0f, 1.0f, 1.0f,		float(0x39) / 255,float(0xc5) / 255,float(0xbb) / 255,
+		1.0f,	-1.0f,	-1.0f,		1.0f,	0.0f,	0.0f,
+		1.0f,	-1.0f,	1.0f,		1.0f,	0.0f,	0.0f,
+		1.0f,	1.0f,	-1.0f,		1.0f,	0.0f,	0.0f,
+		1.0f,	1.0f,	1.0f,		1.0f,	0.0f,	0.0f,
+
+		-1.0f,	-1.0f,	-1.0f,		0.0f,	-1.0f,	0.0f,
+		-1.0f,	-1.0f,	1.0f,		0.0f,	-1.0f,	0.0f,
+		1.0f,	-1.0f,	-1.0f,		0.0f,	-1.0f,	0.0f,
+		1.0f,	-1.0f,	1.0f,		0.0f,	-1.0f,	0.0f,
+
+		-1.0f,	1.0f,	-1.0f,		0.0f,	1.0f,	0.0f,
+		-1.0f,	1.0f,	1.0f,		0.0f,	1.0f,	0.0f,
+		1.0f,	1.0f,	-1.0f,		0.0f,	1.0f,	0.0f,
+		1.0f,	1.0f,	1.0f,		0.0f,	1.0f,	0.0f,
+
+		-1.0f,	-1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
+		-1.0f,	1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
+		1.0f,	-1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
+		1.0f,	1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
+
+		-1.0f,	-1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
+		-1.0f,	1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
+		1.0f,	-1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
+		1.0f,	1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
 	};
 
-	unsigned int indice[]
+	unsigned int indice[36]
+	{
+		0, 1, 2,
+		1, 2, 3,
+	};
+	for (int i = 6; i < 36; i++)
+	{
+		indice[i] = indice[i - 6] + 4;
+	}
+
+	unsigned int indiceLight[]
 	{
 		0, 1, 2,
 		1, 2, 3,
@@ -141,21 +173,20 @@ int main()
 		3, 5, 7
 	};
 
-
 	{
 		Shader shader(pathVertexShader, pathFragmentShader);
 		Shader objShader(".\\res\\VertexShader_obj.shader", ".\\res\\FragmentShader_obj.shader");
 
 		VertexArray va(36);
 		va.AddBuffer(8, 6, vertice);
-		va.AddElementBuffer(36, indice);
+		va.AddElementBuffer(36, indiceLight);
 		va.PushAttrib(3);
 		va.PushAttrib(3);
 		va.ApplyLayout();
 		
 
 		VertexArray objVa(36);
-		objVa.AddBuffer(8, 6, objVertice);
+		objVa.AddBuffer(24, 6, objVertice);
 		objVa.AddElementBuffer(36, indice);
 		objVa.PushAttrib(3);
 		objVa.PushAttrib(3);
@@ -188,6 +219,10 @@ int main()
 			objShader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
 			objShader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			objShader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
+			objShader.SetUniform3f("lightPos",lightPos.x, lightPos.y, lightPos.z);
+			objShader.SetUniform3f("objColor", mikuColor[0], mikuColor[1], mikuColor[2]);
+			objShader.SetUniform3f("lightColor", lightColor.x, lightColor.y, lightColor.z);
+
 			objVa.DrawElement();
 			
 
