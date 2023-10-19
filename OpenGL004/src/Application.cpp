@@ -211,7 +211,10 @@ int main()
 			shader.Unbind();
 			shader.Bind();
 
-			modelTrans = glm::translate(eMat, lightPos);
+			modelTrans = glm::rotate(eMat, deltaTime, glm::vec3(-6.0f, 5.0f, 3.0f));
+			lightPos = modelTrans * glm::vec4(lightPos, 1.0f);
+
+			modelTrans = glm::translate(modelTrans, lightPos);
 			shader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
 			shader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			shader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
