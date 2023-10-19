@@ -95,6 +95,11 @@ void Shader::SetUniformMatrix4f(const std::string& valueName, bool transpose, co
 	GLCall(glUniformMatrix4fv(GetUniformLocation(valueName), 1 ,transpose, value));
 }
 
+void Shader::SetUniformMatrix3f(const std::string& valueName, bool transpose, const GLfloat* value)
+{
+	GLCall(glUniformMatrix3fv(GetUniformLocation(valueName), 1, transpose, value));
+}
+
 int Shader::GetUniformLocation(const std::string& valueName)
 {
 	if (m_UniformMapLocation.find(valueName) != m_UniformMapLocation.end())

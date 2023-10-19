@@ -78,9 +78,11 @@ int main()
 	GLCall(glClearColor(0.11f, 0.385f, 0.367f, 1.f));	//清屏颜色
 
 	// 变换
-	glm::mat4 modelTrans(1.f);
-	glm::mat4 viewTrans(1.f);
-	glm::mat4 projectionTrans(1.f);
+	glm::mat4 modelTrans;
+	glm::mat4 viewTrans;
+	glm::mat4 projectionTrans;
+
+	glm::mat3 normalMat;
 
 	viewTrans = glm::translate(viewTrans, glm::vec3(0.0f, 0.0f, -3.0f));
 	projectionTrans = glm::perspective(PI / 4.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
@@ -197,9 +199,12 @@ int main()
 		lastTime = currentTime = glfwGetTime();
 		while (!glfwWindowShouldClose(window))
 		{
+			glm::vec3 cameraPos;
+
 			// 更新时间变量
 			UpdateTimer();
 
+			// 绘制光源方块
 			viewTrans = camera.GetViewTrans();
 			projectionTrans = camera.GetProjectionTrans();
 
@@ -213,16 +218,21 @@ int main()
 
 			va.DrawElement();
 
+			// 绘制受光方块
 			objShader.Unbind();
 			objShader.Bind();
 			modelTrans = glm::translate(eMat, objPos);
+			normalMat = glm::mat3(transpose(inverse(modelTrans)));
+			cameraPos = camera.GetPosition();
+
 			objShader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
 			objShader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			objShader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
+			objShader.SetUniformMatrix3f("normalMat", false, glm::value_ptr(normalMat));
 			objShader.SetUniform3f("lightPos",lightPos.x, lightPos.y, lightPos.z);
 			objShader.SetUniform3f("objColor", mikuColor[0], mikuColor[1], mikuColor[2]);
 			objShader.SetUniform3f("lightColor", lightColor.x, lightColor.y, lightColor.z);
-
+			objShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
 			objVa.DrawElement();
 			
 

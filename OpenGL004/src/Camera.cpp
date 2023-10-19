@@ -17,6 +17,11 @@ glm::mat4 Camera::GetProjectionTrans()
 	return glm::perspective(m_fov, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 }
 
+glm::vec3 Camera::GetPosition() const
+{
+	return m_position;
+}
+
 void Camera::ProcessKeyInput(Camera_Movement diration, float deltaTime)
 {
 	switch (diration)

@@ -61,6 +61,10 @@ public:
 	glm::mat4 GetViewTrans();
 	glm::mat4 GetProjectionTrans();
 
+	glm::vec3 GetPosition() const;
+
+
+
 	void ProcessKeyInput(Camera_Movement diration, float deltaTime);
 	void ProcessMouse(float offsetx, float offsety);
 	void ProcessScroll(float offsety);
