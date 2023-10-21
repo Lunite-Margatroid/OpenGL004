@@ -139,18 +139,23 @@
     <ClCompile Include="src\rander.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\render.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\VertexArray.h" />
+    <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\FragmentShader.shader" />
     <None Include="res\FragmentShader_obj.shader" />
     <None Include="res\VertexShader.shader" />
     <None Include="res\VertexShader_obj.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\img\container2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

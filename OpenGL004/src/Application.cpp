@@ -14,6 +14,7 @@
 #include "Camera.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 
 // 全局变量
 float currentTime = 0.0f;
@@ -112,36 +113,36 @@ int main()
 	glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 	float objVertice[] =
 	{
-		// 坐标										法向量
-		-1.0f,	-1.0f,	-1.0f,		-1.0f,	0.0f,	0.0f,
-		-1.0f,	-1.0f,	1.0f,		-1.0f,	0.0f,	0.0f,
-		-1.0f,	1.0f,	-1.0f,		-1.0f,	0.0f,	0.0f,
-		-1.0f,	1.0f,	1.0f,		-1.0f,	0.0f,	0.0f,
+		// 坐标						法向量					纹理坐标
+		-1.0f,	-1.0f,	-1.0f,		-1.0f,	0.0f,	0.0f,	0.0f,	0.0f,
+		-1.0f,	-1.0f,	1.0f,		-1.0f,	0.0f,	0.0f,	0.0f,	1.0f,
+		-1.0f,	1.0f,	-1.0f,		-1.0f,	0.0f,	0.0f,	1.0f,	0.0f,
+		-1.0f,	1.0f,	1.0f,		-1.0f,	0.0f,	0.0f,	1.0f,	1.0f,
 
-		1.0f,	-1.0f,	-1.0f,		1.0f,	0.0f,	0.0f,
-		1.0f,	-1.0f,	1.0f,		1.0f,	0.0f,	0.0f,
-		1.0f,	1.0f,	-1.0f,		1.0f,	0.0f,	0.0f,
-		1.0f,	1.0f,	1.0f,		1.0f,	0.0f,	0.0f,
+		1.0f,	-1.0f,	-1.0f,		1.0f,	0.0f,	0.0f,	0.0f,	0.0f,
+		1.0f,	-1.0f,	1.0f,		1.0f,	0.0f,	0.0f,	0.0f,	1.0f,
+		1.0f,	1.0f,	-1.0f,		1.0f,	0.0f,	0.0f,	1.0f,	0.0f,
+		1.0f,	1.0f,	1.0f,		1.0f,	0.0f,	0.0f,	1.0f,	1.0f,
 
-		-1.0f,	-1.0f,	-1.0f,		0.0f,	-1.0f,	0.0f,
-		-1.0f,	-1.0f,	1.0f,		0.0f,	-1.0f,	0.0f,
-		1.0f,	-1.0f,	-1.0f,		0.0f,	-1.0f,	0.0f,
-		1.0f,	-1.0f,	1.0f,		0.0f,	-1.0f,	0.0f,
+		-1.0f,	-1.0f,	-1.0f,		0.0f,	-1.0f,	0.0f,	0.0f,	0.0f,
+		-1.0f,	-1.0f,	1.0f,		0.0f,	-1.0f,	0.0f,	0.0f,	1.0f,
+		1.0f,	-1.0f,	-1.0f,		0.0f,	-1.0f,	0.0f,	1.0f,	0.0f,
+		1.0f,	-1.0f,	1.0f,		0.0f,	-1.0f,	0.0f,	1.0f,	1.0f,
 
-		-1.0f,	1.0f,	-1.0f,		0.0f,	1.0f,	0.0f,
-		-1.0f,	1.0f,	1.0f,		0.0f,	1.0f,	0.0f,
-		1.0f,	1.0f,	-1.0f,		0.0f,	1.0f,	0.0f,
-		1.0f,	1.0f,	1.0f,		0.0f,	1.0f,	0.0f,
+		-1.0f,	1.0f,	-1.0f,		0.0f,	1.0f,	0.0f,	0.0f,	0.0f,
+		-1.0f,	1.0f,	1.0f,		0.0f,	1.0f,	0.0f,	0.0f,	1.0f,
+		1.0f,	1.0f,	-1.0f,		0.0f,	1.0f,	0.0f,	1.0f,	0.0f,
+		1.0f,	1.0f,	1.0f,		0.0f,	1.0f,	0.0f,	1.0f,	1.0f,
 
-		-1.0f,	-1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
-		-1.0f,	1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
-		1.0f,	-1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
-		1.0f,	1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,
+		-1.0f,	-1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,	0.0f,	0.0f,
+		-1.0f,	1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,	0.0f,	1.0f,
+		1.0f,	-1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,	1.0f,	0.0f,
+		1.0f,	1.0f,	-1.0f,		0.0f,	0.0f,	-1.0f,	1.0f,	1.0f,
 
-		-1.0f,	-1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
-		-1.0f,	1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
-		1.0f,	-1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
-		1.0f,	1.0f,	1.0f,		0.0f,	0.0f,	1.0f,
+		-1.0f,	-1.0f,	1.0f,		0.0f,	0.0f,	1.0f,	0.0f,	0.0f,
+		-1.0f,	1.0f,	1.0f,		0.0f,	0.0f,	1.0f,	0.0f,	1.0f,
+		1.0f,	-1.0f,	1.0f,		0.0f,	0.0f,	1.0f,	1.0f,	0.0f,
+		1.0f,	1.0f,	1.0f,		0.0f,	0.0f,	1.0f,	1.0f,	1.0f,
 	};
 
 	unsigned int indice[36]
@@ -175,10 +176,17 @@ int main()
 		3, 5, 7
 	};
 
+	
+
 	{
+		// 加载纹理
+		std::string imgPath(".\\res\\img\\container2.png");
+		Texture texture1(imgPath, 0, GL_RGB, GL_RGBA);
+
 		Shader shader(pathVertexShader, pathFragmentShader);
 		Shader objShader(".\\res\\VertexShader_obj.shader", ".\\res\\FragmentShader_obj.shader");
 
+		// 光源方块
 		VertexArray va(36);
 		va.AddBuffer(8, 6, vertice);
 		va.AddElementBuffer(36, indiceLight);
@@ -186,17 +194,21 @@ int main()
 		va.PushAttrib(3);
 		va.ApplyLayout();
 		
-
+		// 受光方块
 		VertexArray objVa(36);
-		objVa.AddBuffer(24, 6, objVertice);
+		objVa.AddBuffer(24, 8, objVertice);
 		objVa.AddElementBuffer(36, indice);
 		objVa.PushAttrib(3);
 		objVa.PushAttrib(3);
+		objVa.PushAttrib(2);
 		objVa.ApplyLayout();
+
 
 
 		void UpdateTimer();
 		lastTime = currentTime = glfwGetTime();
+
+
 		while (!glfwWindowShouldClose(window))
 		{
 			glm::vec3 cameraPos;
@@ -232,9 +244,16 @@ int main()
 			objShader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			objShader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
 			objShader.SetUniformMatrix3f("normalMat", false, glm::value_ptr(normalMat));
-			objShader.SetUniform3f("lightPos",lightPos.x, lightPos.y, lightPos.z);
-			objShader.SetUniform3f("objColor", mikuColor[0], mikuColor[1], mikuColor[2]);
-			objShader.SetUniform3f("lightColor", lightColor.x, lightColor.y, lightColor.z);
+			objShader.SetUniform3f("light.position",lightPos.x, lightPos.y, lightPos.z);
+
+			objShader.SetUniformTexture("material.diffuse", texture1);
+			objShader.SetUniform3f("material.specular", 1.0f, 1.0f, 1.0f);
+			objShader.SetUniform1f("material.shininess", 40.f);
+
+			objShader.SetUniform3f("light.ambient", 0.2f, 0.2f, 0.2f);
+			objShader.SetUniform3f("light.diffuse", lightColor.x, lightColor.y, lightColor.z);
+			objShader.SetUniform3f("light.specular", lightColor.x, lightColor.y, lightColor.z);
+			
 			objShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
 			objVa.DrawElement();
 			

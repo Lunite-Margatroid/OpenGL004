@@ -90,6 +90,11 @@ void Shader::SetUniform1i(const std::string& valueName, int v1)
 	GLCall(glUniform1i(GetUniformLocation(valueName), v1));
 }
 
+void Shader::SetUniform1f(const std::string& valueName, float v1)
+{
+	GLCall(glUniform1f(GetUniformLocation(valueName), v1));
+}
+
 void Shader::SetUniformMatrix4f(const std::string& valueName, bool transpose, const GLfloat* value)
 {
 	GLCall(glUniformMatrix4fv(GetUniformLocation(valueName), 1 ,transpose, value));
@@ -98,6 +103,11 @@ void Shader::SetUniformMatrix4f(const std::string& valueName, bool transpose, co
 void Shader::SetUniformMatrix3f(const std::string& valueName, bool transpose, const GLfloat* value)
 {
 	GLCall(glUniformMatrix3fv(GetUniformLocation(valueName), 1, transpose, value));
+}
+
+void Shader::SetUniformTexture(const std::string& valueName, const Texture& texture)
+{
+	GLCall( this->SetUniform1i( valueName, texture.GetIndex() ) );
 }
 
 int Shader::GetUniformLocation(const std::string& valueName)
