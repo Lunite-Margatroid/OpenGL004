@@ -22,15 +22,20 @@ glm::vec3 Camera::GetPosition() const
 	return m_position;
 }
 
+glm::vec3 Camera::GetDirection() const
+{
+	return m_front;
+}
+
 void Camera::ProcessKeyInput(Camera_Movement diration, float deltaTime)
 {
 	switch (diration)
 	{
 	case FRONT:
-		m_position += m_front * deltaTime * m_moveSpeed;
+		m_position += glm::cross(m_worldUp, m_right) * deltaTime * m_moveSpeed;
 		break;
 	case BACK:
-		m_position -= m_front * deltaTime * m_moveSpeed;
+		m_position -= glm::cross(m_worldUp, m_right) * deltaTime * m_moveSpeed;
 		break;
 	case LEFT:
 		m_position -= m_right * deltaTime * m_moveSpeed;

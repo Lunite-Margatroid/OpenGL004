@@ -75,8 +75,7 @@ int main()
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetKeyCallback(window, key_callback);
 	
-	GLCall(glEnable(GL_DEPTH_TEST));					// 深度检测
-	GLCall(glClearColor(0.11f, 0.385f, 0.367f, 1.f));	//清屏颜色
+	
 
 	// 变换
 	glm::mat4 modelTrans;
@@ -176,15 +175,27 @@ int main()
 		3, 5, 7
 	};
 
-	
+	glm::vec3 Pos[10];
+	for (int i = 0; i < 10; i++)
+	{
+		Pos[i] = glm::vec3(float(rand()%200-100)/10.f, 
+			float(rand() % 200 - 100) / 10.f, 
+			float(rand() % 200 - 100) / 10.f);
+	}
+
+
 
 	{
 		// 加载纹理
 		std::string imgPath(".\\res\\img\\container2.png");
 		Texture texture1(imgPath, 0, GL_RGB, GL_RGBA);
 
+		std::string imgPath2(".\\res\\img\\container2_specular.png");
+		Texture texture2(imgPath2, 1, GL_RGB, GL_RGBA);
+
+
 		Shader shader(pathVertexShader, pathFragmentShader);
-		Shader objShader(".\\res\\VertexShader_obj.shader", ".\\res\\FragmentShader_obj.shader");
+		Shader objShader(".\\res\\VertexShaderPointLight.shader", ".\\res\\SpotLightFragment.shader");
 
 		// 光源方块
 		VertexArray va(36);
@@ -203,15 +214,16 @@ int main()
 		objVa.PushAttrib(2);
 		objVa.ApplyLayout();
 
-
-
 		void UpdateTimer();
 		lastTime = currentTime = glfwGetTime();
 
 
+		GLCall(glEnable(GL_DEPTH_TEST));					// 深度检测
+		GLCall(glClearColor(mikuColor[0] * 0.3f, mikuColor[1] * 0.3f, mikuColor[2] * 0.3f, 1.f));	//清屏颜色
 		while (!glfwWindowShouldClose(window))
 		{
 			glm::vec3 cameraPos;
+			glm::vec3 cameraDir;
 
 			// 更新时间变量
 			UpdateTimer();
@@ -239,24 +251,41 @@ int main()
 			modelTrans = glm::translate(eMat, objPos);
 			normalMat = glm::mat3(transpose(inverse(modelTrans)));
 			cameraPos = camera.GetPosition();
+			cameraDir = camera.GetDirection();
 
 			objShader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
 			objShader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			objShader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
 			objShader.SetUniformMatrix3f("normalMat", false, glm::value_ptr(normalMat));
-			objShader.SetUniform3f("light.position",lightPos.x, lightPos.y, lightPos.z);
+			objShader.SetUniform3f("light.direction",cameraDir.x, cameraDir.y, cameraDir.z);
+			objShader.SetUniform3f("light.position", cameraPos.x, cameraPos.y, cameraPos.z);
+			objShader.SetUniform1f("light.cutOut", cos(PI / 13));
 
 			objShader.SetUniformTexture("material.diffuse", texture1);
-			objShader.SetUniform3f("material.specular", 1.0f, 1.0f, 1.0f);
+			objShader.SetUniformTexture("material.specular", texture2);
 			objShader.SetUniform1f("material.shininess", 40.f);
 
-			objShader.SetUniform3f("light.ambient", 0.2f, 0.2f, 0.2f);
+			objShader.SetUniform3f("light.ambient", 0.4f, 0.4f, 0.4f);
 			objShader.SetUniform3f("light.diffuse", lightColor.x, lightColor.y, lightColor.z);
 			objShader.SetUniform3f("light.specular", lightColor.x, lightColor.y, lightColor.z);
 			
+
 			objShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
+
 			objVa.DrawElement();
-			
+
+			for (int i = 0; i < 10; i++)
+			{
+				modelTrans = glm::rotate(eMat,
+					PI / 3.0f,
+					Pos[i]);
+				modelTrans = glm::translate(modelTrans, Pos[i] );
+				
+				objShader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
+				normalMat = glm::mat3(transpose(inverse(modelTrans)));
+				objShader.SetUniformMatrix3f("normalMat", false, glm::value_ptr(normalMat));
+				objVa.DrawElement();
+			}
 
 			// 处理键盘控制输入
 			ProcessInput(window);

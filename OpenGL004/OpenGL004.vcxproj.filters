@@ -59,9 +59,17 @@
     <None Include="res\VertexShader.shader" />
     <None Include="res\VertexShader_obj.shader" />
     <None Include="res\FragmentShader_obj.shader" />
+    <None Include="res\DirectionalLightFragment.shader" />
+    <None Include="res\DirectionalLightVertex.shader" />
+    <None Include="res\VertexShaderPointLight.shader" />
+    <None Include="res\FragmentShaderPointLight.shader" />
+    <None Include="res\SpotLightFragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\img\container2.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\img\container2_specular.png">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>
