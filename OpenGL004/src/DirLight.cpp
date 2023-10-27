@@ -1,0 +1,23 @@
+#include "DirLight.h"
+
+LM::DirLight::DirLight(glm::vec3 ambi, glm::vec3 diff, glm::vec3 spec, glm::vec3 dir):
+	Light(ambi, diff, spec),m_v3Direction(dir)
+{
+}
+
+LM::DirLight::DirLight()
+{
+	m_v3Direction = glm::vec3(0.0f, -1.0f, 0.0f);
+}
+
+void LM::DirLight::SetLightDirection(glm::vec3 dir)
+{
+	m_v3Direction = dir;
+}
+
+void LM::DirLight::SetUniformLight(const std::string& valName, Shader& shader)
+{
+	Light::SetUniformLight(valName, shader);
+	std::string tempName = valName + ".direction";
+	shader.SetUniform3f(tempName, m_v3Direction.x, m_v3Direction.y, m_v3Direction.z);
+}

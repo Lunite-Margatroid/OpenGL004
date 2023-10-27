@@ -20,7 +20,13 @@ struct Light
 
 	vec3 direction;
 
-	float cutOut;
+	float innerbdr;
+	float outerbdr;
+
+	// 模糊边界
+	float kConstant;		// 常数项
+	float kLinear;			// 一次项
+	float kQuadratic;		// 2次项
 };
 
 in vec3 normal;				// 来自顶点属性的法向量
@@ -52,13 +58,13 @@ void main()
 	// 计算环境光
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
 
-	if (theta < light.cutOut)
+	if (theta < light.outerbdr)
 	{// 片段在光照范围外
 		// 仅仅计算环境光
 		result = ambient;
 	}
 
-	if (theta >= light.cutOut)
+	if (theta >= light.outerbdr)
 	{// 片段在光照范围内
 		// 计算散射光
 		float diff = max(dot(lightDir, norm), 0.0);					// 漫反射光强度系数
@@ -69,6 +75,14 @@ void main()
 		vec3 viewDir = normalize(viewPos - fragPos);				// 观察方向
 		float spec = pow(max(dot(reflectDir, viewDir), 0.0), material.shininess);	// 反射强度
 		vec3 specular = vec3(texture(material.specular, TexCoord)) * spec * light.specular;	// 反射光颜色
+
+		// 片段在过渡带
+		if (theta < light.innerbdr)
+		{
+			float attenuation = (theta - light.outerbdr) / (light.innerbdr - light.outerbdr);
+			diffuse *= attenuation;
+			specular *= attenuation;
+		}
 
 		result = ambient + diffuse + specular;
 	}

@@ -259,7 +259,8 @@ int main()
 			objShader.SetUniformMatrix3f("normalMat", false, glm::value_ptr(normalMat));
 			objShader.SetUniform3f("light.direction",cameraDir.x, cameraDir.y, cameraDir.z);
 			objShader.SetUniform3f("light.position", cameraPos.x, cameraPos.y, cameraPos.z);
-			objShader.SetUniform1f("light.cutOut", cos(PI / 13));
+			objShader.SetUniform1f("light.outerbdr", cos(PI / 13));
+			objShader.SetUniform1f("light.innerbdr", cos(PI / 20));
 
 			objShader.SetUniformTexture("material.diffuse", texture1);
 			objShader.SetUniformTexture("material.specular", texture2);

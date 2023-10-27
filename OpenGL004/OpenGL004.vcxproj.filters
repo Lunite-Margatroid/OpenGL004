@@ -36,6 +36,18 @@
     <ClCompile Include="src\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DirLight.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PointLight.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpotLight.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -53,6 +65,18 @@
     <ClInclude Include="src\Texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DirLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PointLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpotLight.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\FragmentShader.shader" />
@@ -64,6 +88,7 @@
     <None Include="res\VertexShaderPointLight.shader" />
     <None Include="res\FragmentShaderPointLight.shader" />
     <None Include="res\SpotLightFragment.shader" />
+    <None Include="res\MultiLightFragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\img\container2.png">

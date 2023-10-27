@@ -1,7 +1,4 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
-#include "render.h"
 #include "Shader.h"
 
 Shader::Shader(const std::string& vertexShader, const std::string& fragmentShader)

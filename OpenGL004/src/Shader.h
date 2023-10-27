@@ -1,5 +1,8 @@
 #pragma once
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
+#include "render.h"
 #include "Texture.h"
 
 class Shader
