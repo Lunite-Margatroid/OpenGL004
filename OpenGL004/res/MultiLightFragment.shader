@@ -16,7 +16,7 @@ struct DirLight
 	vec3 diffuse;
 	vec3 specular;
 
-	vec3 position;
+	vec3 direction;
 };
 
 // 点光源
@@ -25,7 +25,12 @@ struct PointLight
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
 	vec3 position;
+
+	float kConstant;		// 常数项
+	float kLinear;			// 一次项
+	float kQuadratic;		// 2次项
 };
 
 
@@ -76,7 +81,7 @@ void main()
 	vec3 texDiff = vec3(texture(material.diffuse, TexCoord));
 	vec3 texSpec = vec3(texture(material.specular, TexCoord));
 	// 从片段指向观察者
-	vec3 viewDir = normalze(fragPos-viewPos);
+	vec3 viewDir = normalize(fragPos-viewPos);
 
 	vec3 result = vec3(0.0, 0.0, 0.0);
 
@@ -124,16 +129,16 @@ vec3 ProcPointLight(PointLight light, vec3 texDiff, vec3 texSpec, vec3 normalVec
 	vec3 ambient = light.ambient * texDiff;
 
 	// 计算漫反射光
-	vec3 lightDir = fragPos - light.postion;
+	vec3 lightDir = fragPos - light.position;
 	float lightDst = length(lightDir);
 	lightDir = normalize(lightDir);
-	float diff = normalVec * lightDir;
+	float diff = max(dot(normalVec , lightDir),0.0f);
 	vec3 diffuse = light.diffuse * texDiff * diff;
 
 	// 计算镜面反射
 	vec3 reflectDir = reflect(-lightDir, normalVec);
-	float spec = pow(max(dot(reflectDir, viewDir), 0), material.shininess);
-	vec3 specular = spec * light.specular * material.specular;
+	float spec = pow(max(dot(reflectDir, viewDir), 0.0f), material.shininess);
+	vec3 specular = light.specular * texSpec * spec;
 
 	// 计算衰减
 	float attenuation = 1.0 / 
@@ -157,11 +162,8 @@ vec3 ProcSpotLight(SpotLight light, vec3 texDiff, vec3 texSpec, vec3 normalVec, 
 	// 计算环境光
 	vec3 ambient = light.ambient * texDiff;
 
-	if (theta < light.outerbdr)
-	{// 片段在光照范围外
-		// 仅仅计算环境光
-		output = ambient;
-	}
+	// 片段在光照范围外 仅计算环境光
+	output = ambient;
 
 	if (theta >= light.outerbdr)
 	{// 片段在光照范围内
@@ -181,11 +183,12 @@ vec3 ProcSpotLight(SpotLight light, vec3 texDiff, vec3 texSpec, vec3 normalVec, 
 			diffuse *= attenuation;
 			specular *= attenuation;
 		}
-		attenuation = 1.0 / 
-			(light.kConstant + light.kLinear * lightDst + light.kQuadratic * lightDst * lightDst);
-
-		output = (ambient + diffuse + specular) * attenuation;
+		output += diffuse + specular;
 	}
+
+	float attenuation = 1.0 /
+		(light.kConstant + light.kLinear * lightDst + light.kQuadratic * lightDst * lightDst);
+	output *= attenuation;
 
 	return output;
 }

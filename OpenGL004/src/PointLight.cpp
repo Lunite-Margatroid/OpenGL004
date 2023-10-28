@@ -17,7 +17,7 @@ LM::PointLight::PointLight()
 	m_kQuadratic = 0.01f;
 }
 
-void LM::PointLight::SetUniformLight(const std::string valName, Shader& shader)
+void LM::PointLight::SetUniformLight(const std::string& valName, Shader& shader)
 {
 	Light::SetUniformLight(valName, shader);
 	std::string tempName = valName + ".position";
@@ -33,12 +33,18 @@ void LM::PointLight::SetUniformLight(const std::string valName, Shader& shader)
 	shader.SetUniform1f(tempName, m_kQuadratic);
 }
 
+void LM::PointLight::SetUniformPosition(const std::string& valName, Shader& shader)
+{
+	std::string tempName = valName + ".position";
+	shader.SetUniform3f(tempName, m_v3Position.x, m_v3Position.y, m_v3Position.z);
+}
+
 void LM::PointLight::SetLightPosition(glm::vec3 position)
 {
 	m_v3Position = position;
 }
 
-void LM::PointLight::SetAttenuation(float constant, float linear, float quadratic)
+void LM::PointLight::SetLightAttenuation(float constant, float linear, float quadratic)
 {
 	m_kConstant = constant;
 	m_kLinear = linear;

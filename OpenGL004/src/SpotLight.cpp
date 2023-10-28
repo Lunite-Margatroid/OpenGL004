@@ -7,7 +7,7 @@ LM::SpotLight::SpotLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specula
 {
 	m_v3Position = position;
 	m_v3Direction = direction;
-	m_fInnerBdr = cos(3.14159f / 16.f);
+	m_fInnerBdr = cos(3.14159f / 12.f);
 	m_fOuterBdr = cos(3.14159f / 10.f);
 }
 

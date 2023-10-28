@@ -15,6 +15,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "SpotLight.h"
 
 // 全局变量
 float currentTime = 0.0f;
@@ -183,6 +184,20 @@ int main()
 			float(rand() % 200 - 100) / 10.f);
 	}
 
+	glm::vec3 pointLightPos[4] =
+	{
+	glm::vec3(-5.0f, 5.0f, -5.0f),
+	glm::vec3(5.0f, 5.0f, -5.0f),
+	glm::vec3(-5.0f, 5.0f, 5.0f),
+	glm::vec3(5.0f, 5.0f, 5.0f)
+	};
+	glm::vec3 pointLightColor[4] =
+	{
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+	};
 
 
 	{
@@ -195,7 +210,7 @@ int main()
 
 
 		Shader shader(pathVertexShader, pathFragmentShader);
-		Shader objShader(".\\res\\VertexShaderPointLight.shader", ".\\res\\SpotLightFragment.shader");
+		Shader objShader(".\\res\\VertexShaderPointLight.shader", ".\\res\\MultiLightFragment.shader");
 
 		// 光源方块
 		VertexArray va(36);
@@ -213,6 +228,33 @@ int main()
 		objVa.PushAttrib(3);
 		objVa.PushAttrib(2);
 		objVa.ApplyLayout();
+
+		// 创建光源
+		LM::PointLight pointLight[4];
+		for (int i = 0; i < 4; i++)
+		{
+			pointLight[i].SetLightColor(
+				0.1f * pointLightColor[i],
+				0.8f * pointLightColor[i],
+				pointLightColor[i]);
+			pointLight[i].SetLightPosition(pointLightPos[i]);
+		}
+
+		LM::DirLight dirLight(
+			glm::vec3(0.1f, 0.1f, 0.1f),
+			glm::vec3(0.5f,0.5f,0.5f),
+			glm::vec3(1.0f,1.0f,1.0f),
+			glm::vec3(1.0f, -3.0f, 1.0f)
+		);
+
+		LM::SpotLight spotLight(
+			glm::vec3(0.2f, 0.2f, 0.2f),
+			glm::vec3(0.5f, 0.5f, 0.5f),
+			glm::vec3(1.0f, 1.0f, 1.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 0.0f, -1.0f)
+		);
+		spotLight.SetLightAttenuation(1.0f, 0.1f, 0.01f);
 
 		void UpdateTimer();
 		lastTime = currentTime = glfwGetTime();
@@ -234,16 +276,17 @@ int main()
 
 			shader.Unbind();
 			shader.Bind();
-
-			modelTrans = glm::rotate(eMat, deltaTime, glm::vec3(-6.0f, 5.0f, 3.0f));
-			lightPos = modelTrans * glm::vec4(lightPos, 1.0f);
-
-			modelTrans = glm::translate(modelTrans, lightPos);
-			shader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
+			
 			shader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			shader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
 
-			va.DrawElement();
+			for (int i = 0; i < 4; i++)
+			{
+				modelTrans = glm::translate(eMat, pointLightPos[i]);
+				shader.SetUniformMatrix4f("modelTrans", false, glm::value_ptr(modelTrans));
+				va.DrawElement();
+			}
+
 
 			// 绘制受光方块
 			objShader.Unbind();
@@ -257,21 +300,31 @@ int main()
 			objShader.SetUniformMatrix4f("viewTrans", false, glm::value_ptr(viewTrans));
 			objShader.SetUniformMatrix4f("projectionTrans", false, glm::value_ptr(projectionTrans));
 			objShader.SetUniformMatrix3f("normalMat", false, glm::value_ptr(normalMat));
-			objShader.SetUniform3f("light.direction",cameraDir.x, cameraDir.y, cameraDir.z);
-			objShader.SetUniform3f("light.position", cameraPos.x, cameraPos.y, cameraPos.z);
-			objShader.SetUniform1f("light.outerbdr", cos(PI / 13));
-			objShader.SetUniform1f("light.innerbdr", cos(PI / 20));
 
 			objShader.SetUniformTexture("material.diffuse", texture1);
 			objShader.SetUniformTexture("material.specular", texture2);
 			objShader.SetUniform1f("material.shininess", 40.f);
-
-			objShader.SetUniform3f("light.ambient", 0.4f, 0.4f, 0.4f);
-			objShader.SetUniform3f("light.diffuse", lightColor.x, lightColor.y, lightColor.z);
-			objShader.SetUniform3f("light.specular", lightColor.x, lightColor.y, lightColor.z);
 			
-
 			objShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
+
+			// 点光源
+			for (int i = 0; i < 4; i++)
+			{
+				std::stringstream ss;
+				std::string tempStr;
+				ss.clear();
+				ss << "pointLight[";
+				ss << i;
+				ss << "]";
+				tempStr = ss.str();
+				pointLight[i].SetUniformLight(tempStr, objShader);
+			}
+			// 定向光源
+			dirLight.SetUniformLight("dirLight", objShader);
+			// 聚光
+			spotLight.SetLightDirection(cameraDir);
+			spotLight.SetLightPosition(cameraPos);
+			spotLight.SetUniformLight("spotLight", objShader);
 
 			objVa.DrawElement();
 

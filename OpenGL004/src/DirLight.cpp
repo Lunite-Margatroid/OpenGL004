@@ -18,6 +18,11 @@ void LM::DirLight::SetLightDirection(glm::vec3 dir)
 void LM::DirLight::SetUniformLight(const std::string& valName, Shader& shader)
 {
 	Light::SetUniformLight(valName, shader);
+	SetUniformDirection(valName, shader);
+}
+
+void LM::DirLight::SetUniformDirection(const std::string& valName, Shader& shader)
+{
 	std::string tempName = valName + ".direction";
 	shader.SetUniform3f(tempName, m_v3Direction.x, m_v3Direction.y, m_v3Direction.z);
 }

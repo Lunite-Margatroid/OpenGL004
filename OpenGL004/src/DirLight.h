@@ -25,6 +25,7 @@ namespace LM
         DirLight();
         void SetLightDirection(glm::vec3 dir);
         void SetUniformLight(const std::string& valName, Shader& shader);
+        void SetUniformDirection(const std::string& valName, Shader& shader);
     };
 }
 
